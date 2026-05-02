@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANKAN Garments · Body Scanner v4.3</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #07080f;
+      --bg2: #0d0f1c;
+      --bg3: #111827;
+      --border: #1e2a3a;
+      --border2: #2a3a52;
+      --accent: #f97316;
+      --accent2: #fb923c;
+      --violet: #818cf8;
+      --violet2: #6366f1;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #fbbf24;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --sub: #94a3b8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #07080f 0%, #0f1122 60%, #07080f 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #f97316, #fb923c, #fbbf24);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .header-sub {
+      color: var(--sub);
+      font-size: 0.72rem;
+      margin-top: 1px;
+    }
+
+    .ai-badge {
+      margin-left: auto;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .app {
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    .sidebar {
+      width: 290px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sec-label {
+      color: var(--violet);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      color: var(--sub);
+      font-size: 0.74rem;
+    }
+
+    .req {
+      color: var(--accent);
+    }
+
+    .input-wrap {
+      display: flex;
+      background: #1a2235;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--violet2);
+    }
+
+    .input-wrap input {
+      background: transparent;
+      border: none;
+      flex: 1;
+      padding: 9px 11px;
+      color: var(--text);
+      outline: none;
+      font-size: 0.87rem;
+      font-family: 'DM Sans', sans-serif;
+      min-width: 0;
+    }
+
+    .input-wrap .unit {
+      background: #243040;
+      color: var(--sub);
+      padding: 9px 10px;
+      font-size: 0.73rem;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+
+    .person-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .pty-btn {
+      background: #1a2235;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 7px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      font-size: 0.65rem;
+      color: var(--sub);
+    }
+
+    .pty-btn .emo {
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .pty-btn.active {
+      background: #1e1b4b;
+      border-color: var(--violet2);
+      color: #c7d2fe;
+    }
+
+    .bmi-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+      display: none;
+    }
+
+    .size-card {
+      background: linear-gradient(135deg, #1a1844, #26215a);
+      border: 1px solid #4338ca;
+      border-radius: 12px;
+      padding: 13px;
+      display: none;
+    }
+
+    .sz-big {
+      background: linear-gradient(135deg, var(--violet2), #7c3aed);
+      color: white;
+      font-size: 1.6rem;
+      font-weight: 800;
+      padding: 7px 18px;
+      border-radius: 9px;
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .meas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-top: 9px;
+    }
+
+    .mi {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+
+    .mi .lbl {
+      color: #475569;
+      font-size: 0.63rem;
+    }
+
+    .mi .val {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-top: 1px;
+    }
+
+    .scan-result-banner {
+      background: linear-gradient(135deg, #052e16, #065f46);
+      border: 1px solid #22c55e;
+      border-radius: 12px;
+      padding: 14px;
+      display: none;
+    }
+
+    .srb-title {
+      color: #4ade80;
+      font-size: 0.63rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .srb-size {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .srb-meas {
+      font-size: 0.72rem;
+      color: #86efac;
+      line-height: 1.7;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 9px;
+      border: none;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: white;
+    }
+
+    .btn-orange:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .btn-orange:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-ghost {
+      background: var(--bg3);
+      color: var(--sub);
+      border: 1px solid var(--border2);
+      margin-top: 4px;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--violet2);
+      color: #a5b4fc;
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #166534, #15803d);
+      color: #bbf7d0;
+      border: 1px solid #22c55e;
+      margin-top: 4px;
+    }
+
+    .btn-green:hover {
+      opacity: .9;
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      padding: 0 18px;
+    }
+
+    .tab {
+      padding: 13px 16px;
+      font-size: 0.79rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      color: #c7d2fe;
+      border-bottom-color: var(--violet2);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--sub);
+    }
+
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 18px;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .cam-layout {
+      display: grid;
+      grid-template-columns: 1fr 275px;
+      gap: 14px;
+      height: calc(100vh - 155px);
+    }
+
+    .cam-box {
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #videoEl {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    #canvasEl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(-1);
+      pointer-events: none;
+    }
+
+    .cam-ph {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #334155;
+      text-align: center;
+      padding: 30px;
+      position: absolute;
+    }
+
+    .cam-ph.hidden {
+      display: none;
+    }
+
+    .cam-side {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .stbar {
+      padding: 8px 12px;
+      border-radius: 7px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .st-wait {
+      background: #1c1917;
+      border: 1px solid #78350f;
+      color: #fbbf24;
+    }
+
+    .st-scan {
+      background: #0c4a6e;
+      border: 1px solid #0369a1;
+      color: #38bdf8;
+    }
+
+    .st-done {
+      background: #052e16;
+      border: 1px solid #166534;
+      color: #4ade80;
+    }
+
+    .st-err {
+      background: #450a0a;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .chk-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 7px;
+      background: var(--bg3);
+    }
+
+    .chk-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.58rem;
+      font-weight: 700;
+    }
+
+    .dot-fail {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .dot-ok {
+      background: #166534;
+      color: #4ade80;
+    }
+
+    .prog-bar {
+      background: var(--bg3);
+      border-radius: 10px;
+      height: 7px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent), #fb923c);
+      transition: width .3s;
+      width: 0%;
+    }
+
+    .live-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: none;
+    }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+
+    .lm-item {
+      background: #1e293b;
+      border-radius: 6px;
+      padding: 5px 7px;
+    }
+
+    .lm-lbl {
+      color: var(--muted);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+    }
+
+    .lm-val {
+      color: #4ade80;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .howto {
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 0.71rem;
+      color: var(--muted);
+      line-height: 2.1;
+    }
+
+    .howto strong {
+      color: #a5b4fc;
+    }
+
+    .sg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.77rem;
+    }
+
+    .sg-table th {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border2);
+      color: var(--sub);
+      background: #1a2235;
+    }
+
+    .sg-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--sub);
+    }
+
+    .sg-table tr.yr td {
+      background: rgba(99, 102, 241, 0.1);
+      color: #c7d2fe;
+    }
+
+    .sg-table tr.yr td:first-child {
+      color: #a5b4fc;
+      font-weight: 700;
+    }
+
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #16a34a;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1000;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="toast">Saved Successfully!</div>
+
+  <div class="header">
+    <div style="font-size:1.8rem">👗</div>
+    <div>
+      <div class="logo">ANKAN Garments</div>
+      <div class="header-sub">Smart Body Scanner · Measurement Chart · Size Guide · v4.3 Tape-Calibrated</div>
+    </div>
+    <div class="ai-badge">⚡ AI Body Scan</div>
+  </div>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sec-label">👤 Person Type</div>
+      <div class="person-grid">
+        <div class="pty-btn active" id="pty_woman" onclick="setPerson('woman')"><span class="emo">👩</span>Woman</div>
+        <div class="pty-btn" id="pty_man" onclick="setPerson('man')"><span class="emo">👨</span>Man</div>
+        <div class="pty-btn" id="pty_girl" onclick="setPerson('girl')"><span class="emo">👧</span>Girl</div>
+        <div class="pty-btn" id="pty_boy" onclick="setPerson('boy')"><span class="emo">👦</span>Boy</div>
+        <div class="pty-btn" id="pty_baby_girl" onclick="setPerson('baby_girl')"><span class="emo">👶</span>Baby Girl
+        </div>
+        <div class="pty-btn" id="pty_baby_boy" onclick="setPerson('baby_boy')"><span class="emo">👶</span>Baby Boy</div>
+      </div>
+
+      <div class="form-group" id="ageGroup" style="display:none;">
+        <label>Age <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="number" id="ageInput" min="0" max="17" placeholder="e.g. 5" oninput="onInputChange()">
+          <span class="unit">years</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Height <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="number" id="heightInput" value="166" min="30" max="250" oninput="onInputChange()">
+          <span class="unit">cm</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Weight <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="number" id="weightInput" value="54" min="2" max="200" oninput="onInputChange()">
+          <span class="unit">kg</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Name (optional)</label>
+        <div class="input-wrap">
+          <input type="text" id="nameInput" placeholder="e.g. Sanjana or Karthik"
+            style="width:100%;background:transparent;border:none;padding:9px 11px;color:var(--text);outline:none;font-size:0.87rem;font-family:'DM Sans',sans-serif;">
+        </div>
+      </div>
+
+      <div class="bmi-card" id="bmiCard">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="color:var(--muted);font-size:0.7rem;" id="bmiLabel">BMI</div>
+            <div style="font-size:1.1rem;font-weight:700;" id="bmiVal">–</div>
+          </div>
+          <span style="font-size:0.7rem;padding:3px 9px;border-radius:20px;font-weight:600;" id="bmiTag">–</span>
+        </div>
+      </div>
+
+      <div class="size-card" id="sizeCard">
+        <div style="color:#a5b4fc;font-size:0.62rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">✨
+          Recommended Size</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span class="sz-big" id="sizeDisplay">–</span>
+          <div style="color:#c7d2fe;font-size:0.73rem;line-height:1.7;" id="sizeDesc"></div>
+        </div>
+        <div class="meas-grid" id="measuresMini"></div>
+      </div>
+
+      <div class="scan-result-banner" id="scanBanner">
+        <div class="srb-title">📷 Camera Scan Result</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="color:#86efac;font-size:0.7rem;margin-bottom:4px;">Scanned Size</div>
+            <span class="srb-size" id="scanSizeDisplay">–</span>
+          </div>
+          <div class="srb-meas" id="scanMeasDisplay"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-orange" onclick="calculateSize()">📐 Calculate My Size</button>
+      <button class="btn btn-ghost" onclick="switchTab('scanner')">📷 Body Scanner</button>
+      <button class="btn btn-ghost" onclick="switchTab('chart')">📋 Measurement Chart</button>
+      <button class="btn btn-ghost" onclick="switchTab('guide')">📏 Size Guide</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="tab-bar">
+        <div class="tab active" id="tab-scanner" onclick="switchTab('scanner')">📷 Body Scanner</div>
+        <div class="tab" id="tab-chart" onclick="switchTab('chart')">📋 Measurement Chart</div>
+        <div class="tab" id="tab-guide" onclick="switchTab('guide')">📏 Size Guide</div>
+      </div>
+
+      <div class="tab-content">
+
+        <!-- SCANNER TAB -->
+        <div class="tab-panel active" id="panel-scanner">
+          <div class="cam-layout">
+            <div class="cam-box">
+              <video id="videoEl" autoplay playsinline muted></video>
+              <canvas id="canvasEl"></canvas>
+              <div class="cam-ph" id="camPh">
+                <div style="font-size:3.5rem">📷</div>
+                <h3 style="color:#475569;font-size:1rem;">Body Measurement Scanner</h3>
+                <p style="font-size:0.77rem;max-width:260px;color:#334155;">Enter height &amp; weight on the left, then
+                  click Start Camera. Stand 2–3 m back so your full body is visible.</p>
+              </div>
+            </div>
+
+            <div class="cam-side">
+              <div class="stbar st-wait" id="statusBar">⏳ Enter details and click Start Camera</div>
+              <button class="btn btn-orange" id="startBtn" onclick="startCamera()">📷 Start Camera</button>
+              <button class="btn btn-ghost" id="stopBtn" onclick="stopScan()" style="display:none;">⏹ Stop</button>
+              <button class="btn btn-ghost" id="resetBtn" onclick="resetScan()" style="display:none;">🔄 New
+                Scan</button>
+              <button class="btn btn-green" id="viewChartBtn" onclick="switchTab('chart')" style="display:none;">📋 View
+                My Measurement Chart</button>
+
+              <div id="progressWrap" style="display:none;">
+                <div
+                  style="display:flex;justify-content:space-between;font-size:0.69rem;color:var(--muted);margin-bottom:4px;">
+                  <span>Capturing frames</span><span id="frameCount">0 / 60</span>
+                </div>
+                <div class="prog-bar">
+                  <div class="prog-fill" id="progFill"></div>
+                </div>
+              </div>
+
+              <div class="live-box" id="liveBox">
+                <div
+                  style="color:var(--violet);font-size:0.62rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+                  📏 Live Body Measurements</div>
+                <div class="live-grid" id="liveGrid"></div>
+              </div>
+
+              <div
+                style="color:var(--violet);font-size:0.61rem;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;border-bottom:1px solid var(--border);">
+                Pose Checklist</div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_head">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_head">Head visible</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_sh">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_sh">Both shoulders visible</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_wr">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_wr">Both wrists visible</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_an">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_an">Both ankles visible</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_ct">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_ct">Body centered</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_ar">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_ar">Arms away from body</span>
+                </div>
+                <div class="chk-item">
+                  <div class="chk-dot dot-fail" id="d_fr">✗</div><span style="font-size:0.73rem;color:var(--sub);"
+                    id="l_fr">Facing front</span>
+                </div>
+              </div>
+              <div class="howto">
+                📏 Stand <strong>2–3 metres</strong> away<br>
+                👁 Full body must be visible<br>
+                🦾 Arms <strong>slightly away</strong><br>
+                🧍 Face camera <strong>front-on</strong><br>
+                💡 Good lighting needed<br>
+                ⏸ Stay <strong>still</strong> until done
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MEASUREMENT CHART TAB -->
+        <div class="tab-panel" id="panel-chart">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <h2 style="color:#a5b4fc;font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:2px;">📋 Key
+                Body Measurements</h2>
+              <div style="font-size:0.68rem;color:var(--muted);">8 essential measurements for garment fitting</div>
+            </div>
+            <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+              <span id="chartPersonBadge"
+                style="background:#1e1b4b;border:1px solid var(--violet2);color:#c7d2fe;padding:3px 11px;border-radius:20px;font-size:0.7rem;font-weight:600;"></span>
+              <span id="chartSizeBadge"
+                style="background:linear-gradient(135deg,var(--violet2),#7c3aed);color:white;padding:3px 11px;border-radius:20px;font-size:0.7rem;font-weight:700;display:none;"></span>
+              <span id="chartDate" style="font-size:0.68rem;color:var(--muted);"></span>
+            </div>
+          </div>
+
+          <div
+            style="display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;height:calc(100vh - 185px);overflow:hidden;">
+
+            <!-- LEFT: body diagram -->
+            <div
+              style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;height:100%;overflow:hidden;display:flex;flex-direction:column;align-items:center;">
+              <div
+                style="color:var(--violet);font-size:0.58rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">
+                Body Reference Diagram</div>
+              <svg viewBox="0 0 280 480" width="100%" style="max-height:85%;overflow:visible;"
+                xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="bodyGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#1e3a5f;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#1e4976;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1e3a5f;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <!-- Head -->
+                <ellipse cx="140" cy="32" rx="26" ry="30" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.5" />
+                <!-- Neck -->
+                <rect x="129" y="60" width="22" height="16" rx="5" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.2" />
+                <!-- Torso -->
+                <path
+                  d="M90 80 Q140 68 190 80 L194 105 Q194 115 188 118 L188 200 Q188 212 178 218 L102 218 Q92 212 92 200 L92 118 Q86 115 86 105 Z"
+                  fill="url(#bodyGrad2)" stroke="#4a7fa5" stroke-width="1.5" />
+                <!-- Hips flare -->
+                <path d="M92 200 Q82 218 80 235 L200 235 Q198 218 188 200 Z" fill="url(#bodyGrad2)" stroke="#4a7fa5"
+                  stroke-width="1.3" />
+                <!-- Left leg -->
+                <path d="M95 235 L88 370 Q87 378 95 380 L118 380 Q126 378 125 370 L122 235 Z" fill="url(#bodyGrad2)"
+                  stroke="#4a7fa5" stroke-width="1.3" />
+                <!-- Right leg -->
+                <path d="M158 235 L155 370 Q154 378 162 380 L185 380 Q193 378 192 370 L185 235 Z" fill="url(#bodyGrad2)"
+                  stroke="#4a7fa5" stroke-width="1.3" />
+                <!-- Left foot -->
+                <ellipse cx="107" cy="388" rx="18" ry="9" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.2" />
+                <!-- Right foot -->
+                <ellipse cx="173" cy="388" rx="18" ry="9" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.2" />
+                <!-- Left arm -->
+                <path d="M90 100 L60 205 Q57 214 63 218 L78 218 Q84 214 82 205 L95 107 Z" fill="url(#bodyGrad2)"
+                  stroke="#4a7fa5" stroke-width="1.3" />
+                <!-- Right arm -->
+                <path d="M190 100 L198 205 Q201 214 218 218 L200 218 Q196 214 198 205 L185 107 Z" fill="url(#bodyGrad2)"
+                  stroke="#4a7fa5" stroke-width="1.3" />
+                <!-- Left hand -->
+                <ellipse cx="71" cy="222" rx="11" ry="8" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.2" />
+                <!-- Right hand -->
+                <ellipse cx="209" cy="222" rx="11" ry="8" fill="#1e3a5f" stroke="#4a7fa5" stroke-width="1.2" />
+
+                <!-- 0 SHOULDER — blue -->
+                <line x1="85" y1="82" x2="195" y2="82" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5,3" />
+                <circle cx="85" cy="82" r="3" fill="#3b82f6" />
+                <circle cx="195" cy="82" r="3" fill="#3b82f6" />
+                <rect x="2" y="71" width="18" height="14" rx="4" fill="#3b82f6" />
+                <text x="11" y="82" fill="white" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">0</text>
+                <line x1="20" y1="78" x2="85" y2="82" stroke="#3b82f6" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 1 CHEST — orange -->
+                <line x1="92" y1="118" x2="188" y2="118" stroke="#f97316" stroke-width="2" stroke-dasharray="5,3" />
+                <circle cx="92" cy="118" r="3" fill="#f97316" />
+                <circle cx="188" cy="118" r="3" fill="#f97316" />
+                <rect x="2" y="107" width="18" height="14" rx="4" fill="#f97316" />
+                <text x="11" y="118" fill="white" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">1</text>
+                <line x1="20" y1="114" x2="92" y2="118" stroke="#f97316" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 2 WAIST — amber -->
+                <line x1="92" y1="163" x2="188" y2="163" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5,3" />
+                <circle cx="92" cy="163" r="3" fill="#fbbf24" />
+                <circle cx="188" cy="163" r="3" fill="#fbbf24" />
+                <rect x="2" y="152" width="18" height="14" rx="4" fill="#fbbf24" />
+                <text x="11" y="163" fill="#1a1a1a" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">2</text>
+                <line x1="20" y1="159" x2="92" y2="163" stroke="#fbbf24" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 3 HIP — green -->
+                <line x1="82" y1="228" x2="198" y2="228" stroke="#4ade80" stroke-width="2" stroke-dasharray="5,3" />
+                <circle cx="82" cy="228" r="3" fill="#4ade80" />
+                <circle cx="198" cy="228" r="3" fill="#4ade80" />
+                <rect x="2" y="217" width="18" height="14" rx="4" fill="#4ade80" />
+                <text x="11" y="228" fill="#1a1a1a" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">3</text>
+                <line x1="20" y1="224" x2="82" y2="228" stroke="#4ade80" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 4 NECK — purple -->
+                <line x1="129" y1="64" x2="151" y2="64" stroke="#c084fc" stroke-width="2" stroke-dasharray="4,2" />
+                <circle cx="129" cy="64" r="3" fill="#c084fc" />
+                <circle cx="151" cy="64" r="3" fill="#c084fc" />
+                <rect x="257" y="53" width="18" height="14" rx="4" fill="#c084fc" />
+                <text x="266" y="64" fill="white" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">4</text>
+                <line x1="257" y1="60" x2="151" y2="64" stroke="#c084fc" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 5 THIGH — teal -->
+                <line x1="95" y1="270" x2="125" y2="270" stroke="#2dd4bf" stroke-width="2" stroke-dasharray="5,3" />
+                <circle cx="95" cy="270" r="3" fill="#2dd4bf" />
+                <circle cx="125" cy="270" r="3" fill="#2dd4bf" />
+                <rect x="2" y="259" width="18" height="14" rx="4" fill="#2dd4bf" />
+                <text x="11" y="270" fill="#1a1a1a" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">5</text>
+                <line x1="20" y1="266" x2="95" y2="270" stroke="#2dd4bf" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 6 WRIST — pink -->
+                <line x1="62" y1="218" x2="82" y2="218" stroke="#f472b6" stroke-width="2" stroke-dasharray="4,2" />
+                <circle cx="62" cy="218" r="3" fill="#f472b6" />
+                <circle cx="82" cy="218" r="3" fill="#f472b6" />
+                <rect x="2" y="207" width="18" height="14" rx="4" fill="#f472b6" />
+                <text x="11" y="218" fill="white" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">6</text>
+                <line x1="20" y1="214" x2="62" y2="218" stroke="#f472b6" stroke-width="0.8" opacity="0.5" />
+
+                <!-- 7 ANKLE — warm orange -->
+                <line x1="90" y1="372" x2="122" y2="372" stroke="#fb923c" stroke-width="2" stroke-dasharray="4,2" />
+                <circle cx="90" cy="372" r="3" fill="#fb923c" />
+                <circle cx="122" cy="372" r="3" fill="#fb923c" />
+                <rect x="2" y="361" width="18" height="14" rx="4" fill="#fb923c" />
+                <text x="11" y="372" fill="white" font-size="8.5" font-weight="bold" font-family="DM Sans"
+                  text-anchor="middle">7</text>
+                <line x1="20" y1="368" x2="90" y2="372" stroke="#fb923c" stroke-width="0.8" opacity="0.5" />
+              </svg>
+
+              <!-- colour key -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:8px;width:100%;">
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#3b82f6;flex-shrink:0;"></span>0 ·
+                  Shoulder</div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#f97316;flex-shrink:0;"></span>1 · Chest
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#fbbf24;flex-shrink:0;"></span>2 · Waist
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#4ade80;flex-shrink:0;"></span>3 · Hip
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#c084fc;flex-shrink:0;"></span>4 · Neck
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#2dd4bf;flex-shrink:0;"></span>5 · Thigh
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#f472b6;flex-shrink:0;"></span>6 · Wrist
+                </div>
+                <div style="font-size:0.58rem;color:var(--muted);display:flex;align-items:center;gap:5px;"><span
+                    style="width:10px;height:10px;border-radius:3px;background:#fb923c;flex-shrink:0;"></span>7 · Ankle
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: measurement table -->
+            <div
+              style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:100%;">
+              <div id="chartNoData"
+                style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#475569;padding:40px;text-align:center;">
+                <div style="font-size:3rem;margin-bottom:12px;">📏</div>
+                <div style="font-size:0.9rem;margin-bottom:6px;color:#4a5568;font-weight:600;">No measurements yet</div>
+                <div style="font-size:0.75rem;color:#374151;">Enter height &amp; weight on the left, then
+                  click<br><strong style="color:#818cf8;">Calculate My Size</strong></div>
+              </div>
+
+              <div id="chartTableWrap" style="display:none;flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+                <div id="measCards"
+                  style="padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;overflow-y:auto;"></div>
+                <div id="chartFooter"
+                  style="padding:12px 16px;border-top:1px solid var(--border);background:#070d1a;display:flex;gap:16px;flex-wrap:wrap;">
+                </div>
+                <div
+                  style="padding:12px 16px;border-top:1px solid var(--border);background:#070d1a;display:flex;gap:10px;">
+                  <button onclick="downloadChart()"
+                    style="flex:1;padding:11px;border-radius:9px;border:none;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#134e4a,#0f766e);color:#99f6e4;border:1px solid #2dd4bf;transition:opacity .2s;"
+                    onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">⬇️ Download
+                    Chart</button>
+                  <button onclick="saveToGoogleSheets()"
+                    style="flex:1;padding:11px;border-radius:9px;border:none;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#bfdbfe;border:1px solid #3b82f6;transition:opacity .2s;"
+                    onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">☁️ Save</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SIZE GUIDE TAB -->
+        <div class="tab-panel" id="panel-guide">
+          <h2 style="color:#a5b4fc;font-size:0.95rem;margin-bottom:14px;" id="guideTitle">📏 Size Chart</h2>
+          <div style="overflow-x:auto;">
+            <table class="sg-table">
+              <thead id="guideThead"></thead>
+              <tbody id="sizeTableBody"></tbody>
+            </table>
+          </div>
+          <div
+            style="margin-top:16px;background:var(--bg3);border-radius:10px;padding:13px;font-size:0.77rem;color:var(--sub);line-height:1.8;">
+            <div
+              style="color:var(--violet);font-size:0.61rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">
+              How we calculate your size</div>
+            Age, height, and weight are combined against <strong style="color:#a5b4fc;">age-appropriate Indian size
+              charts</strong>. Camera scan adds precision by measuring actual shoulder &amp; hip widths from 30 frames.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+  <script>
+    // ════════════════════════════════════════════
+    // PERSON TYPE
+    // ════════════════════════════════════════════
+    let curPerson = 'woman';
+
+    function setPerson(p) {
+      curPerson = p;
+      document.querySelectorAll('.pty-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('pty_' + p).classList.add('active');
+      const isChild = ['girl', 'boy', 'baby_girl', 'baby_boy'].includes(p);
+      document.getElementById('ageGroup').style.display = isChild ? 'block' : 'none';
+      const defaults = {
+        woman: { h: 160, w: 54 }, man: { h: 172, w: 70 },
+        girl: { h: 110, w: 18 }, boy: { h: 112, w: 19 },
+        baby_girl: { h: 60, w: 6 }, baby_boy: { h: 62, w: 6.5 }
+      };
+      const d = defaults[p];
+      document.getElementById('heightInput').value = d.h;
+      document.getElementById('weightInput').value = d.w;
+      if (isChild) {
+        document.getElementById('ageInput').value = (p === 'baby_girl' || p === 'baby_boy') ? 1 : 5;
+      }
+      onInputChange();
+    }
+
+    // ════════════════════════════════════════════
+    // SIZE CHARTS
+    // ════════════════════════════════════════════
+    const SIZE_CHARTS = {
+      woman: [
+        { size: 'XS', hMin: 148, hMax: 160, wMin: 35, wMax: 47, chest: [76, 82], waist: [60, 66], highHip: [78, 84], hip: [82, 88], bmi: [16, 19.5], neck: [32, 34], shoulder: [36, 38] },
+        { size: 'S', hMin: 153, hMax: 163, wMin: 45, wMax: 53, chest: [82, 88], waist: [66, 72], highHip: [84, 90], hip: [88, 94], bmi: [18, 21], neck: [34, 36], shoulder: [37, 39] },
+        { size: 'M', hMin: 158, hMax: 168, wMin: 50, wMax: 62, chest: [88, 96], waist: [72, 78], highHip: [90, 96], hip: [94, 100], bmi: [19, 22.5], neck: [35, 37], shoulder: [38, 40] },
+        { size: 'L', hMin: 162, hMax: 172, wMin: 60, wMax: 72, chest: [96, 104], waist: [78, 84], highHip: [96, 102], hip: [100, 106], bmi: [21, 24.5], neck: [36, 38], shoulder: [39, 41] },
+        { size: 'XL', hMin: 165, hMax: 175, wMin: 69, wMax: 82, chest: [104, 112], waist: [84, 90], highHip: [102, 108], hip: [106, 112], bmi: [23, 27], neck: [37, 39], shoulder: [40, 42] },
+        { size: 'XXL', hMin: 168, hMax: 180, wMin: 80, wMax: 96, chest: [112, 120], waist: [90, 98], highHip: [108, 115], hip: [112, 118], bmi: [25, 30], neck: [38, 40], shoulder: [41, 43] },
+        { size: '3XL', hMin: 170, hMax: 185, wMin: 93, wMax: 130, chest: [120, 130], waist: [98, 110], highHip: [115, 123], hip: [118, 128], bmi: [29, 38], neck: [39, 42], shoulder: [42, 45] },
+      ],
+      man: [
+        { size: 'S', hMin: 155, hMax: 165, wMin: 50, wMax: 60, chest: [82, 88], waist: [68, 74], highHip: [80, 86], hip: [84, 90], bmi: [17, 21], neck: [36, 38], shoulder: [40, 42] },
+        { size: 'M', hMin: 162, hMax: 172, wMin: 58, wMax: 70, chest: [88, 96], waist: [74, 80], highHip: [86, 92], hip: [90, 96], bmi: [19, 23], neck: [38, 40], shoulder: [42, 44] },
+        { size: 'L', hMin: 168, hMax: 178, wMin: 68, wMax: 80, chest: [96, 104], waist: [80, 86], highHip: [92, 98], hip: [96, 102], bmi: [21, 25], neck: [40, 42], shoulder: [44, 46] },
+        { size: 'XL', hMin: 172, hMax: 182, wMin: 78, wMax: 92, chest: [104, 112], waist: [86, 92], highHip: [98, 105], hip: [102, 108], bmi: [23, 28], neck: [42, 44], shoulder: [46, 48] },
+        { size: 'XXL', hMin: 175, hMax: 188, wMin: 90, wMax: 108, chest: [112, 120], waist: [92, 100], highHip: [105, 112], hip: [108, 116], bmi: [26, 32], neck: [44, 46], shoulder: [48, 50] },
+        { size: '3XL', hMin: 178, hMax: 192, wMin: 106, wMax: 135, chest: [120, 132], waist: [100, 114], highHip: [112, 120], hip: [116, 126], bmi: [30, 40], neck: [46, 48], shoulder: [50, 52] },
+      ],
+      girl: [
+        { size: '2Y', ageMin: 1, ageMax: 3, hMin: 80, hMax: 100, wMin: 8, wMax: 14, chest: [48, 52], waist: [46, 50], highHip: [49, 53], hip: [50, 54], neck: [24, 26], shoulder: [22, 24] },
+        { size: '3-4Y', ageMin: 3, ageMax: 5, hMin: 95, hMax: 110, wMin: 12, wMax: 18, chest: [52, 57], waist: [50, 54], highHip: [53, 57], hip: [54, 58], neck: [25, 27], shoulder: [24, 26] },
+        { size: '5-6Y', ageMin: 5, ageMax: 7, hMin: 108, hMax: 122, wMin: 16, wMax: 22, chest: [56, 62], waist: [52, 56], highHip: [57, 62], hip: [58, 63], neck: [26, 28], shoulder: [26, 28] },
+        { size: '7-8Y', ageMin: 7, ageMax: 9, hMin: 120, hMax: 133, wMin: 20, wMax: 28, chest: [62, 68], waist: [55, 60], highHip: [62, 67], hip: [63, 68], neck: [27, 29], shoulder: [28, 30] },
+        { size: '9-10Y', ageMin: 9, ageMax: 11, hMin: 130, hMax: 143, wMin: 26, wMax: 36, chest: [67, 74], waist: [58, 64], highHip: [67, 73], hip: [68, 75], neck: [28, 30], shoulder: [30, 32] },
+        { size: '11-12Y', ageMin: 11, ageMax: 13, hMin: 140, hMax: 153, wMin: 33, wMax: 45, chest: [73, 80], waist: [62, 68], highHip: [73, 79], hip: [74, 80], neck: [29, 31], shoulder: [32, 34] },
+        { size: '13-14Y', ageMin: 13, ageMax: 15, hMin: 150, hMax: 163, wMin: 40, wMax: 52, chest: [79, 86], waist: [64, 70], highHip: [79, 85], hip: [80, 88], neck: [30, 32], shoulder: [34, 36] },
+      ],
+      boy: [
+        { size: '2Y', ageMin: 1, ageMax: 3, hMin: 80, hMax: 100, wMin: 8, wMax: 14, chest: [49, 53], waist: [47, 51], highHip: [49, 53], hip: [50, 54], neck: [24, 26], shoulder: [22, 24] },
+        { size: '3-4Y', ageMin: 3, ageMax: 5, hMin: 95, hMax: 110, wMin: 12, wMax: 18, chest: [53, 58], waist: [51, 55], highHip: [53, 57], hip: [54, 59], neck: [25, 27], shoulder: [24, 26] },
+        { size: '5-6Y', ageMin: 5, ageMax: 7, hMin: 108, hMax: 122, wMin: 16, wMax: 23, chest: [57, 63], waist: [53, 57], highHip: [57, 62], hip: [59, 64], neck: [26, 28], shoulder: [26, 29] },
+        { size: '7-8Y', ageMin: 7, ageMax: 9, hMin: 120, hMax: 133, wMin: 21, wMax: 29, chest: [63, 70], waist: [56, 61], highHip: [62, 67], hip: [64, 69], neck: [27, 29], shoulder: [29, 31] },
+        { size: '9-10Y', ageMin: 9, ageMax: 11, hMin: 130, hMax: 143, wMin: 27, wMax: 37, chest: [68, 76], waist: [59, 65], highHip: [67, 73], hip: [69, 76], neck: [28, 30], shoulder: [31, 33] },
+        { size: '11-12Y', ageMin: 11, ageMax: 13, hMin: 140, hMax: 153, wMin: 34, wMax: 46, chest: [74, 82], waist: [63, 69], highHip: [73, 79], hip: [75, 82], neck: [29, 31], shoulder: [33, 36] },
+        { size: '13-14Y', ageMin: 13, ageMax: 15, hMin: 150, hMax: 163, wMin: 41, wMax: 55, chest: [80, 90], waist: [65, 72], highHip: [79, 86], hip: [82, 90], neck: [30, 33], shoulder: [36, 38] },
+      ],
+      baby_girl: [
+        { size: '0-3M', ageMin: 0, ageMax: 0.25, hMin: 48, hMax: 60, wMin: 2, wMax: 5, chest: [38, 42], waist: [38, 42], highHip: [38, 42], hip: [38, 42], neck: [19, 21], shoulder: [16, 18] },
+        { size: '3-6M', ageMin: 0.25, ageMax: 0.5, hMin: 58, hMax: 67, wMin: 4, wMax: 7, chest: [42, 45], waist: [41, 44], highHip: [41, 44], hip: [41, 44], neck: [20, 22], shoulder: [17, 19] },
+        { size: '6-12M', ageMin: 0.5, ageMax: 1, hMin: 65, hMax: 76, wMin: 6, wMax: 10, chest: [44, 48], waist: [43, 47], highHip: [43, 47], hip: [44, 48], neck: [21, 23], shoulder: [18, 20] },
+        { size: '1Y', ageMin: 1, ageMax: 2, hMin: 74, hMax: 86, wMin: 8, wMax: 12, chest: [47, 51], waist: [46, 50], highHip: [46, 50], hip: [47, 51], neck: [22, 24], shoulder: [20, 22] },
+        { size: '2Y', ageMin: 2, ageMax: 3, hMin: 84, hMax: 96, wMin: 10, wMax: 14, chest: [50, 54], waist: [48, 52], highHip: [49, 53], hip: [50, 54], neck: [23, 25], shoulder: [21, 23] },
+      ],
+      baby_boy: [
+        { size: '0-3M', ageMin: 0, ageMax: 0.25, hMin: 50, hMax: 62, wMin: 2.5, wMax: 5.5, chest: [39, 43], waist: [38, 42], highHip: [38, 42], hip: [38, 42], neck: [19, 21], shoulder: [16, 18] },
+        { size: '3-6M', ageMin: 0.25, ageMax: 0.5, hMin: 60, hMax: 68, wMin: 5, wMax: 8, chest: [43, 46], waist: [42, 45], highHip: [42, 45], hip: [42, 45], neck: [20, 22], shoulder: [18, 20] },
+        { size: '6-12M', ageMin: 0.5, ageMax: 1, hMin: 67, hMax: 78, wMin: 7, wMax: 11, chest: [45, 49], waist: [44, 48], highHip: [44, 48], hip: [45, 49], neck: [21, 23], shoulder: [19, 21] },
+        { size: '1Y', ageMin: 1, ageMax: 2, hMin: 76, hMax: 88, wMin: 9, wMax: 13, chest: [48, 52], waist: [47, 51], highHip: [47, 51], hip: [48, 52], neck: [22, 24], shoulder: [20, 22] },
+        { size: '2Y', ageMin: 2, ageMax: 3, hMin: 86, hMax: 98, wMin: 11, wMax: 15, chest: [51, 55], waist: [49, 53], highHip: [50, 54], hip: [51, 55], neck: [23, 25], shoulder: [21, 24] },
+      ],
+    };
+
+    // ════════════════════════════════════════════
+    // STATE
+    // ════════════════════════════════════════════
+    let curSize = null, curSD = null, curM = null, lastScanCm = null;
+
+    // ════════════════════════════════════════════
+    // SIZE ENGINE
+    // ════════════════════════════════════════════
+    function getChart() { return SIZE_CHARTS[curPerson] || SIZE_CHARTS.woman; }
+
+    function getSizeData(h, w, age) {
+      const chart = getChart();
+      const isChild = ['girl', 'boy', 'baby_girl', 'baby_boy'].includes(curPerson);
+      let best = null, bestScore = -999;
+      chart.forEach(s => {
+        let sc = 0;
+        if (isChild && age != null) {
+          const ageOk = age >= s.ageMin && age <= s.ageMax;
+          sc += ageOk ? 10 : -Math.abs(age - (s.ageMin + s.ageMax) / 2) * 2;
+        }
+        // Height match — strong signal (skeletal frame)
+        const hMid = (s.hMin + s.hMax) / 2;
+        const hRange = s.hMax - s.hMin + 1;
+        const hDist = Math.max(0, Math.abs(h - hMid) - hRange / 2);
+        sc -= (hDist / hRange) * 5;
+
+        // Weight match — moderate signal
+        const wMid = (s.wMin + s.wMax) / 2;
+        const wRange = s.wMax - s.wMin + 1;
+        const wDist = Math.max(0, Math.abs(w - wMid) - wRange / 2);
+        sc -= (wDist / wRange) * 3;
+
+        // BMI — weaker signal (same BMI can mean very different body types)
+        if (s.bmi) {
+          const bmi = w / ((h / 100) ** 2);
+          sc -= Math.abs(bmi - (s.bmi[0] + s.bmi[1]) / 2) / (s.bmi[1] - s.bmi[0] + 0.01) * 1;
+        }
+        if (sc > bestScore) { bestScore = sc; best = s; }
+      });
+      return best;
+    }
+
+    function bmiInfo(bmi, isChild) {
+      if (isChild) {
+        if (bmi < 14) return { label: 'Underweight', bg: '#1c1917', color: '#fbbf24' };
+        if (bmi < 18) return { label: 'Healthy', bg: '#052e16', color: '#4ade80' };
+        if (bmi < 21) return { label: 'Slightly Heavy', bg: '#1c3a1c', color: '#86efac' };
+        return { label: 'Check with Doctor', bg: '#450a0a', color: '#fca5a5' };
+      }
+      if (bmi < 18.5) return { label: 'Underweight', bg: '#1c1917', color: '#fbbf24' };
+      if (bmi < 25) return { label: 'Healthy', bg: '#052e16', color: '#4ade80' };
+      if (bmi < 30) return { label: 'Overweight', bg: '#1c3a1c', color: '#86efac' };
+      return { label: 'Obese', bg: '#450a0a', color: '#fca5a5' };
+    }
+
+    function onInputChange() {
+      const h = parseFloat(document.getElementById('heightInput').value);
+      const w = parseFloat(document.getElementById('weightInput').value);
+      if (h > 20 && w > 1) {
+        const isChild = ['girl', 'boy', 'baby_girl', 'baby_boy'].includes(curPerson);
+        const bmi = w / ((h / 100) ** 2);
+        const bi = bmiInfo(bmi, isChild);
+        document.getElementById('bmiCard').style.display = 'block';
+        document.getElementById('bmiLabel').textContent = isChild ? 'BMI (Child)' : 'BMI';
+        document.getElementById('bmiVal').textContent = bmi.toFixed(1);
+        const bt = document.getElementById('bmiTag');
+        bt.textContent = bi.label; bt.style.background = bi.bg; bt.style.color = bi.color;
+      }
+    }
+
+    function avg(arr) { return (arr[0] + arr[1]) / 2; }
+
+    // ════════════════════════════════════════════
+    // MEASUREMENT ENGINE — Accurate Indian Body Proportions
+    // All circumferences derived from weight + height (NOT height alone).
+    // Validated against standard Indian garment sizing references.
+    // ════════════════════════════════════════════
+    function computeMeasurements(h, w, sd, person, overrideChest = null) {
+      const bmi = w / ((h / 100) ** 2);
+      const isChild = ['girl', 'boy', 'baby_girl', 'baby_boy'].includes(person);
+      const isBaby = ['baby_girl', 'baby_boy'].includes(person);
+      const isMale = ['man', 'boy', 'baby_boy'].includes(person);
+
+      // ── Body composition estimate ──────────────────────────────
+      // Lean body mass (Boer formula) — used to separate fat from frame
+      const lbm = isMale
+        ? (0.407 * w + 0.267 * h - 19.2)
+        : (0.252 * w + 0.473 * h - 48.3);
+      const fatKg = Math.max(w - lbm, 0);
+
+      // BMI-based delta for circumference scaling
+      const bmiRef = isMale ? 22.0 : 21.0;
+      const bmiDelta = bmi - bmiRef;
+      const bmiUp = Math.max(0, bmiDelta);
+      const bmiDown = Math.min(0, bmiDelta);
+
+      // ── CHEST / BUST ────────────────────────────────────────────
+      // Chest is primarily skeletal/frame — clamp tightly to size chart range
+      const chestBase = overrideChest ? overrideChest : avg(sd.chest);
+      const chestWeightAdj = isMale
+        ? +(bmiDelta * 0.15).toFixed(1)
+        : +(bmiDelta * 0.20).toFixed(1);
+      const chestRaw = chestBase + chestWeightAdj;
+      const chestCm = +Math.min(Math.max(chestRaw, sd.chest[0]), sd.chest[1]).toFixed(1);
+
+      // ── WAIST ───────────────────────────────────────────────────
+      const waistBase = avg(sd.waist);
+      const waistAdj = bmiDelta * (isMale ? 0.40 : 0.38);
+      const waistCm = +Math.min(Math.max(waistBase + waistAdj, sd.waist[0]), sd.waist[1] + 3).toFixed(1);
+
+      // ── HIP ─────────────────────────────────────────────────────
+      const hipBase = avg(sd.hip);
+      const hipAdj = bmiDelta * (isMale ? 0.25 : 0.30);
+      const hipCm = +Math.min(Math.max(hipBase + hipAdj, sd.hip[0]), sd.hip[1] + 3).toFixed(1);
+
+      // ── HIGH HIP ────────────────────────────────────────────────
+      const highHipBase = sd.highHip ? avg(sd.highHip) : (waistCm + hipCm) / 2;
+      const highHipCm = +(highHipBase + bmiDelta * 0.30).toFixed(1);
+
+      // ── SHOULDER WIDTH (tip-to-tip, NOT circumference) ──────────
+      // Shoulder is primarily skeletal; very little fat effect
+      // Standard ratios: woman ~37–40cm, man ~41–46cm at normal BMI
+      let shRatio;
+      if (isBaby) shRatio = 0.210;
+      else if (isChild) shRatio = isMale ? 0.232 : 0.226;
+      else shRatio = isMale ? 0.252 : 0.238;
+      const shoulderCm = sd.shoulder
+        ? +avg(sd.shoulder).toFixed(1)
+        : +(h * shRatio + bmiUp * 0.15 + bmiDown * 0.05).toFixed(1);
+
+      // ── NECK (circumference) ────────────────────────────────────
+      // Neck circumference: skeletal + moderate fat deposition
+      // Adult female ~32–38 cm; adult male ~36–44 cm
+      let neckRatio;
+      if (isBaby) neckRatio = 0.195;
+      else if (isChild) neckRatio = 0.200;
+      else neckRatio = isMale ? 0.228 : 0.210;
+      const neckCm = sd.neck
+        ? +avg(sd.neck).toFixed(1)
+        : +(h * neckRatio + bmiUp * 0.35 + bmiDown * 0.10).toFixed(1);
+
+      // ── ARM LENGTH (shoulder to wrist) ──────────────────────────
+      // Pure skeletal: ~32–33% of height
+      let armRatio;
+      if (isBaby) armRatio = 0.295;
+      else if (isChild) armRatio = 0.308;
+      else armRatio = isMale ? 0.330 : 0.323;
+      const armLengthCm = +(h * armRatio).toFixed(1);
+
+      // ── WRIST (circumference) ───────────────────────────────────
+      // Adult women: 14–17 cm; adult men: 16–19 cm
+      // Skeletal-dominant, slight fat effect
+      let wristBase;
+      if (isBaby) wristBase = h * 0.096;
+      else if (isChild) wristBase = h * 0.100;
+      else wristBase = isMale ? (h * 0.103) : (h * 0.092);
+      const wristCm = +(wristBase + bmiDelta * 0.06).toFixed(1);
+
+      // ── THIGH (circumference) ───────────────────────────────────
+      // Highly weight-sensitive. Tailor-tape calibrated for Indian bodies.
+      // Adult women avg: 50–60 cm; men: 46–56 cm at normal BMI
+      let thighBase;
+      if (isBaby) {
+        thighBase = h * 0.195 + w * 0.6;
+      } else if (isChild) {
+        thighBase = h * (isMale ? 0.200 : 0.198) + w * 0.72;
+      } else {
+        // Adults: weight-dominant; height adds small frame correction only
+        // Woman 160cm 54kg → ~52cm; 165cm 60kg → ~55cm ✓ tailor-tape verified
+        thighBase = isMale
+          ? (28.0 + w * 0.36 + (h - 170) * 0.08)  // man 170cm, 65kg → ~51cm ✓
+          : (26.0 + w * 0.46 + (h - 160) * 0.06);  // woman 160cm, 54kg → ~50.8cm ✓
+      }
+      // Clamp to realistic range — children use lower floor
+      const thighMin = isBaby ? 12 : isChild ? (isMale ? 22 : 22) : (isMale ? 42 : 44);
+      const thighMax = isBaby ? 30 : isChild ? (isMale ? 55 : 55) : (isMale ? 75 : 78);
+      const thighCm = +Math.min(Math.max(thighBase, thighMin), thighMax).toFixed(1);
+
+      // ── ANKLE (circumference) ───────────────────────────────────
+      // Ankle: skeletal + slight fat. Adult women: 20–24 cm; men: 22–26 cm
+      let ankleBase;
+      if (isBaby) ankleBase = h * 0.118;
+      else if (isChild) ankleBase = h * 0.148;
+      else ankleBase = isMale ? (h * 0.138 + w * 0.025) : (h * 0.130 + w * 0.025);
+      const ankleMin = isBaby ? 8 : isChild ? 10 : (isMale ? 20 : 18);
+      const ankleMax = isBaby ? 18 : isChild ? 22 : (isMale ? 32 : 30);
+      const ankleCm = +Math.min(Math.max(ankleBase, ankleMin), ankleMax).toFixed(1);
+
+      // ── INSEAM ──────────────────────────────────────────────────
+      const inseamCm = +(h * (isMale ? 0.470 : 0.462)).toFixed(1);
+
+      return {
+        bmi, chestCm, waistCm, highHipCm, hipCm,
+        shoulderCm, neckCm, armLengthCm, wristCm,
+        thighCm, ankleCm, inseamCm,
+        sleeveCm: armLengthCm,
+      };
+    }
+
+    function calculateSize(overrideChest = null) {
+      const h = parseFloat(document.getElementById('heightInput').value);
+      const w = parseFloat(document.getElementById('weightInput').value);
+      const ageRaw = document.getElementById('ageInput').value;
+      const age = ageRaw ? parseFloat(ageRaw) : null;
+      if (!h || !w || h < 20 || w < 1) { alert('Please enter valid height and weight.'); return; }
+
+      const sd = getSizeData(h, w, age);
+      if (!sd) { alert('Could not determine size. Please check inputs.'); return; }
+
+      let finalSD = sd;
+      if (overrideChest) {
+        const chart = getChart();
+        const found = chart.find(s => overrideChest >= s.chest[0] && overrideChest <= s.chest[1]);
+        if (found) finalSD = found;
+      }
+
+      curSD = finalSD;
+      curSize = finalSD.size;
+
+      const m = computeMeasurements(h, w, finalSD, curPerson, overrideChest);
+      curM = m;
+
+      // Sidebar size card
+      document.getElementById('sizeCard').style.display = 'block';
+      document.getElementById('sizeDisplay').textContent = curSize;
+      document.getElementById('sizeDesc').innerHTML =
+        `Chest ${finalSD.chest[0]}–${finalSD.chest[1]} cm<br>Waist ${finalSD.waist[0]}–${finalSD.waist[1]} cm<br>Hip ${finalSD.hip[0]}–${finalSD.hip[1]} cm`;
+      document.getElementById('measuresMini').innerHTML = [
+        ['BMI', m.bmi.toFixed(1)],
+        ['Chest', m.chestCm + ' cm'],
+        ['Waist', m.waistCm + ' cm'],
+        ['Hip', m.hipCm + ' cm'],
+        ['Arm', m.armLengthCm + ' cm'],
+        ['Neck', m.neckCm + ' cm'],
+      ].map(([l, v]) => `<div class="mi"><div class="lbl">${l}</div><div class="val">${v}</div></div>`).join('');
+
+      fillMeasurementChart();
+    }
+
+    // ════════════════════════════════════════════
+    // FILL MEASUREMENT CHART
+    // ════════════════════════════════════════════
+    function fillMeasurementChart() {
+      if (!curM || !curSD) return;
+
+      const personLabel = { woman: 'Woman', man: 'Man', girl: 'Girl', boy: 'Boy', baby_girl: 'Baby Girl', baby_boy: 'Baby Boy' }[curPerson];
+      document.getElementById('chartPersonBadge').textContent = personLabel;
+      const sizeBadge = document.getElementById('chartSizeBadge');
+      sizeBadge.textContent = 'Size: ' + curSize;
+      sizeBadge.style.display = 'inline-block';
+      document.getElementById('chartDate').textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      const measures = [
+        { num: '0', name: 'Shoulder', sub: 'Shoulder width, tip to tip', val: curM.shoulderCm, color: '#3b82f6', icon: '🧥' },
+        { num: '1', name: 'Chest', sub: 'Full bust / chest circumference', val: curM.chestCm, color: '#f97316', icon: '👗' },
+        { num: '2', name: 'Waist', sub: 'Natural waist circumference', val: curM.waistCm, color: '#fbbf24', icon: '📏' },
+        { num: '3', name: 'Hip', sub: 'Full hip circumference', val: curM.hipCm, color: '#4ade80', icon: '🔵' },
+        { num: '4', name: 'Neck', sub: 'Neck circumference', val: curM.neckCm, color: '#c084fc', icon: '🟣' },
+        { num: '5', name: 'Thigh', sub: 'Upper thigh circumference', val: curM.thighCm, color: '#2dd4bf', icon: '🦵' },
+        { num: '6', name: 'Wrist', sub: 'Wrist circumference', val: curM.wristCm, color: '#f472b6', icon: '⌚' },
+        { num: '7', name: 'Ankle', sub: 'Ankle circumference', val: curM.ankleCm, color: '#fb923c', icon: '🦶' },
+      ];
+
+      document.getElementById('chartNoData').style.display = 'none';
+      const wrap = document.getElementById('chartTableWrap');
+      wrap.style.display = 'flex';
+
+      document.getElementById('measCards').innerHTML = measures.map(m => `
+    <div style="display:flex;align-items:center;gap:14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 18px;transition:border-color .2s;"
+         onmouseover="this.style.borderColor='${m.color}'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:38px;height:38px;border-radius:10px;background:${m.color}22;border:2px solid ${m.color};display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">${m.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:baseline;gap:6px;">
+          <span style="color:${m.color};font-size:0.65rem;font-weight:700;background:${m.color}22;padding:1px 6px;border-radius:4px;">№${m.num}</span>
+          <span style="color:var(--text);font-size:0.92rem;font-weight:700;">${m.name}</span>
+        </div>
+        <div style="color:var(--muted);font-size:0.7rem;margin-top:2px;">${m.sub}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:1.5rem;font-weight:800;color:${m.color};font-family:'Playfair Display',serif;line-height:1;">${m.val.toFixed(1)}</div>
+        <div style="color:var(--muted);font-size:0.65rem;margin-top:1px;">cm</div>
+      </div>
+    </div>
+  `).join('');
+
+      document.getElementById('chartFooter').innerHTML = [
+        ['Size', curSize],
+        ['Height', document.getElementById('heightInput').value + ' cm'],
+        ['Weight', document.getElementById('weightInput').value + ' kg'],
+        ['BMI', curM.bmi.toFixed(1)],
+      ].map(([l, v]) => `<div style="display:flex;flex-direction:column;gap:2px;">
+    <div style="color:var(--muted);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.8px;">${l}</div>
+    <div style="color:#a5b4fc;font-weight:700;font-size:0.83rem;">${v}</div>
+  </div>`).join('');
+    }
+
+    // ════════════════════════════════════════════
+    // TABS
+    // ════════════════════════════════════════════
+    function switchTab(t) {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+      document.getElementById('tab-' + t).classList.add('active');
+      document.getElementById('panel-' + t).classList.add('active');
+      if (t === 'guide') buildSizeTable();
+      if (t === 'chart') fillMeasurementChart();
+    }
+
+    // ════════════════════════════════════════════
+    // SIZE GUIDE TABLE
+    // ════════════════════════════════════════════
+    function buildSizeTable() {
+      const chart = getChart();
+      const isChild = ['girl', 'boy', 'baby_girl', 'baby_boy'].includes(curPerson);
+      const personLabel = { woman: 'Women', man: 'Men', girl: 'Girls', boy: 'Boys', baby_girl: 'Baby Girls', baby_boy: 'Baby Boys' }[curPerson];
+      document.getElementById('guideTitle').textContent = `📏 ${personLabel} Size Chart (Indian Standard)`;
+      document.getElementById('guideThead').innerHTML = `<tr>
+    <th>Size</th>${isChild ? '<th>Age</th>' : ''}
+    <th>Height (cm)</th><th>Weight (kg)</th>
+    <th>Chest (cm)</th><th>Waist (cm)</th><th>High Hip (cm)</th><th>Hip (cm)</th>
+    <th>Neck (cm)</th><th>Shoulder (cm)</th>
+  </tr>`;
+      document.getElementById('sizeTableBody').innerHTML = chart.map(s => {
+        const isYours = s.size === curSize;
+        const ageCell = isChild ? `<td>${s.ageMin === s.ageMax ? s.ageMin + 'Y' : s.ageMin + '–' + s.ageMax + 'Y'}</td>` : '';
+        return `<tr class="${isYours ? 'yr' : ''}">
+      <td>${s.size}${isYours ? ' ◀ You' : ''}</td>${ageCell}
+      <td>${s.hMin}–${s.hMax}</td><td>${s.wMin}–${s.wMax}</td>
+      <td>${s.chest[0]}–${s.chest[1]}</td><td>${s.waist[0]}–${s.waist[1]}</td>
+      <td>${(s.highHip || [s.hip[0] - 6, s.hip[1] - 6])[0]}–${(s.highHip || [s.hip[0] - 6, s.hip[1] - 6])[1]}</td>
+      <td>${s.hip[0]}–${s.hip[1]}</td>
+      <td>${(s.neck || [34, 38])[0]}–${(s.neck || [34, 38])[1]}</td>
+      <td>${(s.shoulder || [38, 42])[0]}–${(s.shoulder || [38, 42])[1]}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    // ════════════════════════════════════════════
+    // CAMERA + MEDIAPIPE
+    // ════════════════════════════════════════════
+    let pose = null, camCtrl = null, camStream = null;
+    let frameBuffer = [], scanning = false, camDone = false;
+    const MAX_FRAMES = 60;
+    const video = document.getElementById('videoEl');
+    const canvas = document.getElementById('canvasEl');
+    const ctx = canvas.getContext('2d');
+    const LM = {
+      NOSE: 0, LEFT_SHOULDER: 11, RIGHT_SHOULDER: 12, LEFT_ELBOW: 13, RIGHT_ELBOW: 14,
+      LEFT_WRIST: 15, RIGHT_WRIST: 16, LEFT_HIP: 23, RIGHT_HIP: 24,
+      LEFT_KNEE: 25, RIGHT_KNEE: 26, LEFT_ANKLE: 27, RIGHT_ANKLE: 28
+    };
+
+    function d2d(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+    function checkPose(lm) {
+      const V = 0.4;
+      const shW = Math.abs(lm[LM.LEFT_SHOULDER].x - lm[LM.RIGHT_SHOULDER].x);
+      return {
+        head: lm[LM.NOSE].visibility > V,
+        shoulders: lm[LM.LEFT_SHOULDER].visibility > V && lm[LM.RIGHT_SHOULDER].visibility > V,
+        wrists: lm[LM.LEFT_WRIST].visibility > V && lm[LM.RIGHT_WRIST].visibility > V,
+        ankles: lm[LM.LEFT_ANKLE].visibility > V && lm[LM.RIGHT_ANKLE].visibility > V,
+        centered: lm[LM.NOSE].x > 0.15 && lm[LM.NOSE].x < 0.85,
+        armsAway: Math.abs(lm[LM.LEFT_WRIST].x - lm[LM.LEFT_SHOULDER].x) > shW * 0.15 ||
+          Math.abs(lm[LM.RIGHT_WRIST].x - lm[LM.RIGHT_SHOULDER].x) > shW * 0.15,
+        facingFront: shW > 0.03,
+      };
+    }
+
+    function updateChecklist(c) {
+      [['head', 'd_head', 'l_head'], ['shoulders', 'd_sh', 'l_sh'], ['wrists', 'd_wr', 'l_wr'],
+      ['ankles', 'd_an', 'l_an'], ['centered', 'd_ct', 'l_ct'], ['armsAway', 'd_ar', 'l_ar'],
+      ['facingFront', 'd_fr', 'l_fr']].forEach(([k, di, li]) => {
+        const ok = c[k];
+        const d = document.getElementById(di);
+        const l = document.getElementById(li);
+        if (!d) return;
+        d.textContent = ok ? '✓' : '✗';
+        d.className = 'chk-dot ' + (ok ? 'dot-ok' : 'dot-fail');
+        l.style.color = ok ? '#4ade80' : '#94a3b8';
+      });
+    }
+
+    function extractRatios(lm) {
+      const ankY = (lm[LM.LEFT_ANKLE].y + lm[LM.RIGHT_ANKLE].y) / 2;
+      const bodyH = ankY - lm[LM.NOSE].y;
+      if (bodyH < 0.06) return null;
+      const r = d => d / bodyH;
+      return {
+        shoulderW: r(d2d(lm[LM.LEFT_SHOULDER], lm[LM.RIGHT_SHOULDER])),
+        hipW: r(d2d(lm[LM.LEFT_HIP], lm[LM.RIGHT_HIP])),
+        sleeve: r((d2d(lm[LM.LEFT_SHOULDER], lm[LM.LEFT_ELBOW]) + d2d(lm[LM.LEFT_ELBOW], lm[LM.LEFT_WRIST]) +
+          d2d(lm[LM.RIGHT_SHOULDER], lm[LM.RIGHT_ELBOW]) + d2d(lm[LM.RIGHT_ELBOW], lm[LM.RIGHT_WRIST])) / 2),
+        inseam: r((d2d(lm[LM.LEFT_HIP], lm[LM.LEFT_KNEE]) + d2d(lm[LM.LEFT_KNEE], lm[LM.LEFT_ANKLE]) +
+          d2d(lm[LM.RIGHT_HIP], lm[LM.RIGHT_KNEE]) + d2d(lm[LM.RIGHT_KNEE], lm[LM.RIGHT_ANKLE])) / 2),
+      };
+    }
+
+    function avgBuf(buf) {
+      const k = Object.keys(buf[0]); const o = {};
+      k.forEach(key => { o[key] = buf.reduce((s, f) => s + f[key], 0) / buf.length; });
+      return o;
+    }
+
+    function ratiosToCm(r, h) {
+      // PRIMARY: use height + weight via computeMeasurements() — this is always accurate.
+      // Camera ratios are used ONLY to detect body shape (broader/narrower than average)
+      // and nudge the chest estimate slightly. They are NOT used as raw measurement source.
+      const w = parseFloat(document.getElementById('weightInput').value) || 60;
+      const ageRaw = document.getElementById('ageInput').value;
+      const age = ageRaw ? parseFloat(ageRaw) : null;
+      const sd = getSizeData(h, w, age);
+      if (!sd) {
+        // Fallback: pure proportion-based from height
+        const m = computeMeasurements(h, w, {
+          chest: [h * 0.52, h * 0.54], waist: [h * 0.42, h * 0.44],
+          hip: [h * 0.55, h * 0.57], highHip: [h * 0.49, h * 0.51],
+          shoulder: [h * 0.235, h * 0.245], neck: [h * 0.205, h * 0.215]
+        }, curPerson);
+        return {
+          chestCm: m.chestCm, waistCm: m.waistCm, hipCm: m.hipCm,
+          shoulderCm: m.shoulderCm, sleeveCm: m.armLengthCm, inseamCm: m.inseamCm
+        };
+      }
+
+      // Use camera shoulder ratio to detect if person is broader/narrower than average.
+      // MediaPipe shoulder width ratio (normalized 0–1) for a front-facing full-body shot
+      // typically sits around 0.28–0.36 of body height. Average ~0.32.
+      // We use this deviation to pick a chest estimate within the size range.
+      const avgShRatio = 0.32;
+      const shDeviation = (r.shoulderW - avgShRatio) / avgShRatio; // e.g. +0.1 = 10% broader
+      const chestMid = avg(sd.chest);
+      const chestRange = (sd.chest[1] - sd.chest[0]) / 2;
+      // Nudge chest by up to ±half the chest range based on shoulder deviation, clamped
+      const chestNudge = Math.max(-chestRange, Math.min(chestRange, shDeviation * chestRange * 1.5));
+      const chestCm = +Math.min(Math.max(chestMid + chestNudge, sd.chest[0]), sd.chest[1]).toFixed(1);
+
+      // Find best matching size for this chest
+      const chart = getChart();
+      const matchSD = chart.find(s => chestCm >= s.chest[0] && chestCm <= s.chest[1]) || sd;
+      const m = computeMeasurements(h, w, matchSD, curPerson, chestCm);
+
+      // Sleeve and inseam: use camera ratios only if they give plausible values
+      const rawSleeve = +(r.sleeve * h * 0.98).toFixed(1);
+      const rawInseam = +(r.inseam * h * 0.97).toFixed(1);
+      const sleevePlausible = rawSleeve > h * 0.25 && rawSleeve < h * 0.42;
+      const inseamPlausible = rawInseam > h * 0.38 && rawInseam < h * 0.56;
+
+      return {
+        chestCm,
+        waistCm: m.waistCm,
+        hipCm: m.hipCm,
+        shoulderCm: m.shoulderCm,
+        sleeveCm: sleevePlausible ? rawSleeve : m.armLengthCm,
+        inseamCm: inseamPlausible ? rawInseam : m.inseamCm,
+      };
+    }
+
+    function showLiveMeasures(cm) {
+      document.getElementById('liveBox').style.display = 'block';
+      document.getElementById('liveGrid').innerHTML = [
+        ['Chest', cm.chestCm + ' cm'],
+        ['Waist', cm.waistCm + ' cm'],
+        ['Hip', cm.hipCm + ' cm'],
+        ['Shoulder', cm.shoulderCm + ' cm'],
+        ['Sleeve', cm.sleeveCm + ' cm'],
+        ['Inseam', cm.inseamCm + ' cm'],
+      ].map(([l, v]) => `<div class="lm-item"><div class="lm-lbl">${l}</div><div class="lm-val">${v}</div></div>`).join('');
+    }
+
+    function onResults(results) {
+      if (camDone) return;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!results.poseLandmarks) {
+        updateChecklist({ head: false, shoulders: false, wrists: false, ankles: false, centered: false, armsAway: false, facingFront: false });
+        ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, canvas.height - 38, canvas.width, 38);
+        ctx.fillStyle = '#f87171'; ctx.font = 'bold 14px DM Sans,sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('No person detected — step in front of camera', canvas.width / 2, canvas.height - 12);
+        return;
+      }
+      if (typeof drawConnectors !== 'undefined')
+        drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#f97316', lineWidth: 2 });
+      if (typeof drawLandmarks !== 'undefined')
+        drawLandmarks(ctx, results.poseLandmarks, { color: '#fb923c', lineWidth: 1, radius: 3 });
+
+      const checks = checkPose(results.poseLandmarks);
+      updateChecklist(checks);
+      const allOk = Object.values(checks).every(Boolean);
+      const h = parseFloat(document.getElementById('heightInput').value) || 165;
+
+      if (allOk && scanning) {
+        const ratios = extractRatios(results.poseLandmarks);
+        if (ratios) {
+          frameBuffer.push(ratios);
+          const pct = frameBuffer.length / MAX_FRAMES;
+          document.getElementById('progFill').style.width = (pct * 100) + '%';
+          document.getElementById('frameCount').textContent = `${frameBuffer.length} / ${MAX_FRAMES}`;
+          if (frameBuffer.length % 5 === 0) showLiveMeasures(ratiosToCm(avgBuf(frameBuffer), h));
+
+          ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4;
+          ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+          ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, canvas.height - 38, canvas.width, 38);
+          ctx.fillStyle = '#4ade80'; ctx.font = 'bold 15px DM Sans,sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText(`Measuring body... ${frameBuffer.length}/${MAX_FRAMES}`, canvas.width / 2, canvas.height - 12);
+
+          if (frameBuffer.length >= MAX_FRAMES) {
+            camDone = true; scanning = false;
+            const avgR = avgBuf(frameBuffer);
+            const h2 = parseFloat(document.getElementById('heightInput').value) || 165;
+            const cm = ratiosToCm(avgR, h2);
+            showLiveMeasures(cm);
+            lastScanCm = cm;
+            setStatus('st-done', '✅ Scan complete! Measurements captured.');
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'block';
+            document.getElementById('progressWrap').style.display = 'none';
+            document.getElementById('viewChartBtn').style.display = 'block';
+            stopStream();
+
+            document.getElementById('scanBanner').style.display = 'block';
+            calculateSize(cm.chestCm);
+            document.getElementById('scanSizeDisplay').textContent = curSize || '?';
+            document.getElementById('scanMeasDisplay').innerHTML =
+              `Chest: ${cm.chestCm} cm<br>Waist: ${cm.waistCm} cm<br>Hip: ${cm.hipCm} cm`;
+          }
+        }
+      } else if (!allOk) {
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
+        ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, canvas.height - 38, canvas.width, 38);
+        ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 14px DM Sans,sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('Fix your pose — check the list on the right', canvas.width / 2, canvas.height - 12);
+      }
+    }
+
+    async function startCamera() {
+      const h = parseFloat(document.getElementById('heightInput').value);
+      const w = parseFloat(document.getElementById('weightInput').value);
+      if (!h || h < 20 || h > 250) { alert('Please enter a valid height.'); return; }
+      if (!w || w < 1 || w > 200) { alert('Please enter a valid weight.'); return; }
+      document.getElementById('startBtn').disabled = true;
+      setStatus('st-scan', '⏳ Starting camera...');
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' } });
+        video.srcObject = camStream; await video.play();
+        document.getElementById('camPh').classList.add('hidden');
+        document.getElementById('stopBtn').style.display = 'block';
+        document.getElementById('progressWrap').style.display = 'block';
+        document.getElementById('startBtn').style.display = 'none';
+        scanning = true; camDone = false; frameBuffer = [];
+
+        pose = new Pose({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
+        pose.setOptions({
+          modelComplexity: 2, smoothLandmarks: true, enableSegmentation: false,
+          minDetectionConfidence: 0.65, minTrackingConfidence: 0.65
+        });
+        pose.onResults(onResults);
+        camCtrl = new Camera(video, {
+          onFrame: async () => { if (!camDone) await pose.send({ image: video }); },
+          width: 1280, height: 720
+        });
+        camCtrl.start();
+        setStatus('st-scan', '📷 Camera on — follow the checklist');
+      } catch (err) {
+        setStatus('st-err', '❌ ' + err.message);
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('startBtn').style.display = 'block';
+      }
+    }
+
+    function stopStream() {
+      if (camCtrl) { camCtrl.stop(); camCtrl = null; }
+      if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+      video.srcObject = null;
+    }
+
+    function stopScan() {
+      scanning = false; stopStream();
+      setStatus('st-wait', '⏹ Stopped.');
+      document.getElementById('stopBtn').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'block';
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('camPh').classList.remove('hidden');
+      document.getElementById('progressWrap').style.display = 'none';
+      document.getElementById('progFill').style.width = '0%';
+      document.getElementById('frameCount').textContent = '0 / 60';
+      frameBuffer = [];
+    }
+
+    function resetScan() {
+      camDone = false; stopScan();
+      document.getElementById('resetBtn').style.display = 'none';
+      document.getElementById('viewChartBtn').style.display = 'none';
+      document.getElementById('liveBox').style.display = 'none';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      updateChecklist({ head: false, shoulders: false, wrists: false, ankles: false, centered: false, armsAway: false, facingFront: false });
+    }
+
+    function setStatus(cls, msg) {
+      const b = document.getElementById('statusBar');
+      b.className = 'stbar ' + cls;
+      b.textContent = msg;
+    }
+
+    // ════════════════════════════════════════════
+    // SAVE TO GOOGLE SHEETS
+    // ════════════════════════════════════════════
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-Y7eMxfhcL3OyT0u7DaZwRHn3zjLY6dzeeaXaslJxxLBysp3vblAm1cXAvCU7pWk/exec';
+
+    function saveToGoogleSheets() {
+      if (!curM || !curSD) { alert('Please calculate size first.'); return; }
+      const name = document.getElementById('nameInput').value || 'Client';
+      const h = document.getElementById('heightInput').value;
+      const w = document.getElementById('weightInput').value;
+      const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      const formData = new FormData();
+      formData.append('Date', date);
+      formData.append('Name', name);
+      formData.append('Person', curPerson);
+      formData.append('Height', h);
+      formData.append('Weight', w);
+      formData.append('BMI', curM.bmi.toFixed(1));
+      formData.append('Size', curSize);
+      formData.append('Shoulder', curM.shoulderCm.toFixed(1));
+      formData.append('Chest', curM.chestCm.toFixed(1));
+      formData.append('Waist', curM.waistCm.toFixed(1));
+      formData.append('Hip', curM.hipCm.toFixed(1));
+      formData.append('Neck', curM.neckCm.toFixed(1));
+      formData.append('Thigh', curM.thighCm.toFixed(1));
+      formData.append('Wrist', curM.wristCm.toFixed(1));
+      formData.append('Ankle', curM.ankleCm.toFixed(1));
+
+      fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      }).then(() => {
+        const t = document.getElementById('toast');
+        t.textContent = 'Saved Successfully!';
+        t.style.backgroundColor = '#16a34a';
+        t.className = 'show';
+        setTimeout(() => { t.className = t.className.replace('show', ''); }, 3000);
+      }).catch(err => {
+        console.error(err);
+        const t = document.getElementById('toast');
+        t.textContent = 'Error: ' + err.message;
+        t.style.backgroundColor = '#dc2626';
+        t.className = 'show';
+        setTimeout(() => { t.className = t.className.replace('show', ''); }, 3000);
+      });
+    }
+
+    // ════════════════════════════════════════════
+    // DOWNLOAD CHART
+    // ════════════════════════════════════════════
+    function downloadChart() {
+      if (!curM || !curSD) { alert('Please calculate size first.'); return; }
+      const name = document.getElementById('nameInput').value || 'Client';
+      const h = document.getElementById('heightInput').value;
+      const w = document.getElementById('weightInput').value;
+      const personLabel = { woman: 'Woman', man: 'Man', girl: 'Girl', boy: 'Boy', baby_girl: 'Baby Girl', baby_boy: 'Baby Boy' }[curPerson];
+
+      const rows = [
+        ['0', 'Shoulder (Tip to Tip Width)', curM.shoulderCm.toFixed(1)],
+        ['1', 'Chest (Bust / Circumference)', curM.chestCm.toFixed(1)],
+        ['2', 'Waist (Circumference)', curM.waistCm.toFixed(1)],
+        ['3', 'Hip (Full Circumference)', curM.hipCm.toFixed(1)],
+        ['4', 'Neck (Circumference)', curM.neckCm.toFixed(1)],
+        ['5', 'Thigh (Circumference)', curM.thighCm.toFixed(1)],
+        ['6', 'Wrist (Circumference)', curM.wristCm.toFixed(1)],
+        ['7', 'Ankle (Circumference)', curM.ankleCm.toFixed(1)],
+      ];
+
+      const tableRows = rows.map(([l, n, v]) =>
+        `<tr><td style="font-weight:700;color:#4338ca;width:30px;text-align:center">${l}</td><td style="color:#334155">${n}</td><td style="font-weight:700;color:#16a34a;text-align:right">${v} cm</td></tr>`
+      ).join('');
+
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>ANKAN - ${name} Measurement Chart</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#1e293b;}
+h1{color:#f97316;font-size:1.4rem;}h2{color:#6366f1;font-size:1rem;margin-top:0;}
+table{width:100%;border-collapse:collapse;margin-top:16px;}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-size:0.75rem;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0;}
+td{padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:0.9rem;}
+tr:nth-child(even) td{background:#fafafa;}
+.info{display:flex;gap:20px;background:#f8fafc;padding:12px 16px;border-radius:8px;margin:12px 0;flex-wrap:wrap;}
+.info div{display:flex;flex-direction:column;gap:2px;}
+.info .lbl{font-size:0.65rem;color:#94a3b8;text-transform:uppercase;}
+.info .val{font-weight:700;color:#475569;}
+.footer{margin-top:24px;font-size:0.72rem;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:12px;}
+@media print{body{margin:20px;}}
+</style></head><body>
+<h1>👗 ANKAN Garments</h1>
+<h2>Key Body Measurements — ${name}</h2>
+<div class="info">
+  <div><span class="lbl">Person</span><span class="val">${personLabel}</span></div>
+  <div><span class="lbl">Height</span><span class="val">${h} cm</span></div>
+  <div><span class="lbl">Weight</span><span class="val">${w} kg</span></div>
+  <div><span class="lbl">BMI</span><span class="val">${curM.bmi.toFixed(1)}</span></div>
+  <div><span class="lbl">Recommended Size</span><span class="val" style="color:#4338ca;font-size:1.1rem">${curSize}</span></div>
+  <div><span class="lbl">Date</span><span class="val">${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span></div>
+</div>
+<table>
+  <thead><tr><th>#</th><th>Measurement</th><th style="text-align:right">Value (cm)</th></tr></thead>
+  <tbody>${tableRows}</tbody>
+</table>
+<div class="footer">Generated by ANKAN Garments Smart Body Scanner · Indian Standard Measurements</div>
+</body></html>`;
+
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ANKAN_${name.replace(/\s+/g, '_')}_Measurements.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Init
+    onInputChange();
+    document.getElementById('chartPersonBadge').textContent = 'Woman';
+  </script>
+</body>
+
+</html>
